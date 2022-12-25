@@ -1,0 +1,146 @@
+select * from company_table
+select * from jobs_table
+select * from details_table
+
+---Comparison of number of jobs across different cities for different level 
+select top 15
+	j.city, d.level, count(j.job_id) as Number_of_Jobs
+	from jobs_table as j
+	join details_table as d
+	on j.details_id = d.details_id
+	group by j.city, d.level
+	order by count(j.job_id) desc;
+
+
+-- Number of Jobs per Industry
+select top 15
+	c.industry, count(j.job_id) as Number_of_Jobs
+	from jobs_table as j
+	join company_table as c
+	on j.company_id = c.company_id
+	group by c.industry
+	order by count(j.job_id) desc
+
+--- Number of openings for a company with more than 1000 employees
+select top 15
+	c.company,count(j.job_id) as Openings
+	from jobs_table as j
+	join company_table as c
+	on c.company_id = j.company_id
+	where c.employees > 1000
+	group by c.company
+	order by count(j.job_id) desc
+	
+--- Number of openings for a company with less than 100 employees
+select top 15
+	c.company,count(j.job_id) as Openings
+	from jobs_table as j
+	join company_table as c
+	on c.company_id = j.company_id
+	where c.employees < 100
+	group by c.company
+	order by count(j.job_id) desc
+
+---Count the number of jobs across different industry across different locations
+select top 15
+	c.industry, j.city, count(j.job_id) as Number_of_Jobs
+	from jobs_table as j
+	join company_table as c
+	on c.company_id = j.company_id
+	group by c.industry, j.city
+	order by count(j.job_id) desc;
+
+--- Number of jobs for Data Analyst
+Select 
+	count(Job_Title) as DataAnalystJobs 
+	from jobs_table
+	where Job_Title like '%Data%' or Job_Title Like '%Analyst%'
+
+
+--Number of Jobs for Business Analyst
+Select 
+	job_title, count(Job_Title) as BusinessAnalystJobs	
+	from jobs_table
+	where Job_Title like '%Business%' or Job_Title Like '%Analyst%'
+	group by job_title
+	order by count(job_title) desc;
+
+
+--- Top 15 industries with most jobs
+select top 15
+	c.industry, count(j.job_id) as Number_of_jobs
+	from company_table as c
+	join jobs_table as j
+	on j.company_id = c.company_id
+	group by c.industry
+	order by count(j.job_id) desc;
+
+--- Industry Type with Most Followers
+select top 15
+	Industry, sum(followers) as Total_Followers 
+	from company_table
+	group by Industry
+	order by sum(followers) Desc;
+
+
+	
+--- company with Most Followers
+select top 15
+	company as Company, sum(followers) as Total_Followers 
+	from company_table
+	group by company
+	order by sum(followers) Desc;
+
+
+--- Company with most job openings
+select top 15
+	c.company, count(j.job_id) as Number_of_Jobs
+	from jobs_table as j
+	join company_table as c
+	on j.company_id = c.company_id
+	group by c.company
+	order by count(j.job_id) desc;
+
+--- Top companies with Most applicants
+select top 15 
+	c.company, sum(application_1) as Total_Applicants
+	from jobs_table as j
+	join company_table as c
+	on c.company_id = j.company_id
+	join details_table as d
+	on d.details_id = j.details_id
+	group by c.company
+	order by sum(application_1) desc;
+
+
+--- Cities with Most Jobs
+select top 15
+	city, count(job_id) as Number_of_openigs
+	from jobs_table 
+	group by city
+	order by count(job_id) Desc;
+
+--- More followers mean more Applicants
+with topfollowedcompany as 
+	(select top 15 
+	c.company,application_1 as Applicants, sum(followers) as Total_followers
+	from  company_table as c
+	join jobs_table as j
+	on j.company_id = c.company_id
+	join details_table as d
+	on d.details_id = j.details_id
+	group by c.company, application_1)
+	
+select 
+	Company, Applicants 
+	from topfollowedcompany
+	order by Applicants desc;
+
+--- Level Wise Openings
+select top 15
+	Level, count(j.job_id) as Number_of_Openings
+	from jobs_table as j
+	join details_table as d
+	on j.details_id = d.details_id
+	group by Level
+	order by count(j.job_id) desc;
